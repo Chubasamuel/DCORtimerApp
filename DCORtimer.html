@@ -1,0 +1,182 @@
+<! DOCTYPE html><html>
+<head><title>DCORtimer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta charset="utf-8">
+<link rel="stylesheet" href=""></head>
+	<body   >
+	<style>
+	#mSpanT{
+	position:absolute; top:40%; left:2%;
+	font-size:5em;
+	}
+#mSpan{font-size:3em}
+#sp1,#sp2,#sp3{position:fixed; top:55%; color:#f6c00c; }
+
+#sp1{left:20%;}
+
+#sp2{left:50%;}
+#sp3{left:80%;}
+#hiddenMenu{position:fixed; top:90%;left:0%;width:100%;height:10%; background-color:black;color:#f6c00c; }
+#hiddenMenu span{position:fixed;
+font-weight:bold; left:45%;top:94%}
+#hiddenMenu:hover{background-color:#cfcccf; color:#c66f0c;}
+#hiddenMenu:mouseover{background-color:black}
+
+#menu{display:none;
+position:fixed; top:90%;left:0%;width:100%;height:10%; background-color:black;color:#f6c00c; 
+}
+
+#btnSpan{width:88%;height:8%; position:fixed;top:96%; left:6%;}
+#btnSpan button{
+width:8%;
+margin:0.5%;
+
+}
+#hr,#min,#sec{
+width:10%;
+position:fixed; top:91%; 
+}
+#hr{left:6%;}
+#min{left:18%;}
+#sec{left:30%;}
+#startPause{position:fixed;width:8%;height:5%;top:91%; left:85%;}
+#startPause2{position:fixed;width:8%;height:5%;top:91%; left:85%;}
+#spanShm{position: fixed; top:91%; left:70%; color:#f6c00c; font-weight:bold;}
+#sound1,#sound2{display:none;}
+	</style>
+<div id="timerP" style="width:90%;height:60%; border:6px solid orange;background-color:black; position:fixed;top:15%;left:5%; border-radius:80px; border-bottom:6px solid orange; border-right:6px solid red; border-left:6px solid red;"></div>
+<span id="sp1">hr</span><span id="sp2">min</span><span id="sp3">sec</span>
+<div id="hiddenMenu" onclick="showMenu(this)"><span>SHOW</span></div>
+<div id="menu"><span onclick="showMenu2(this)" id="spanShm">HIDE</span><input type="button" value="hr" id="hr" onclick="inf(this,'hr')" /><input type="button" id="min" value="min" onclick="inf(this,'min')" /><input type="button" id="sec" value="sec" onclick="inf(this,'sec')" /> 
+<input type="button" id="startPause2" onclick="startPause(this)" value="&empty;" /> <input type="button" id="startPause" onclick="startPause(this)" value="&crarr;" /> 
+
+<span id="btnSpan">
+<button onclick="typeNum('0')">0</button><button onclick="typeNum('1')">1</button><button onclick="typeNum('2')">2</button><button onclick="typeNum('3')">3</button><button onclick="typeNum('4')">4</button><button onclick="typeNum('5')">5</button><button onclick="typeNum('6')">6</button><button onclick="typeNum('7')">7</button><button onclick="typeNum('8')">8</button><button onclick="typeNum('9')">9</button><button onclick="Del()" style="padding:0px 0px;">&laquo;</button>
+</span>
+
+</div>
+
+<audio id="sound1" src="sound1.mp3"></audio>
+<audio id="sound2" src="sound2.mp3"></audio>
+	<script>
+	
+	
+var hr; var min; var sec;
+var colorT="white";
+var timeTestTime;
+
+document.getElementById("timerP").innerHTML="<center><span id=\"mSpan\" style=\"font-weight:bold;\"><font color=\"orange\" >D</font><font color=\"red\">C</font><font color=\"red\">O</font><font color=\"orange\">R</font></span><br /><font id=\"mSpanT\" style=\"color:"+colorT+";font-weight:bold\">"+"00:00:00"+"</font></center>";
+function writeTime(){
+if(hr==0&&min<=10){ colorT="red"; }
+hrH=hr;minH=min;secH=sec;
+if(hr.toString().length==1){hrH="0"+hr;}
+if(min.toString().length==1){minH="0"+min;}
+if(sec.toString().length==1){secH="0"+sec;}
+var timeData=hrH+":"+minH+":"+secH;
+document.getElementById("timerP").innerHTML="<center><span id=\"mSpan\" style=\"font-weight:bold;\"><font color=\"orange\" >D</font><font color=\"red\">C</font><font color=\"red\">O</font><font color=\"orange\">R</font></span><br /><font id=\"mSpanT\" style=\"color:"+colorT+";font-weight:bold\">"+timeData+"</font></center>";
+if(clockRunning==1&&hr<=0&&min<=10&&min>=1){
+playAud("sound1");
+} if(clockRunning==1&&hr<=0&&min<=1&&sec<=6){
+playAud("sound2");
+}
+if(clockRunning==1&&hr<=0&&min<=0&&sec<=60){
+playAud("sound2"); }
+
+}
+
+function timeTest(){ 
+var hrH=hr;var minH=min;var secH=sec;
+if(sec>=0){sec-=1}
+writeTime();
+if(sec<=0&&min>0){sec=60; min-=1; }
+if(min<=0&&hr>0&&sec<=0){ min=59;sec=59; hr-=1; }
+if(sec<=0&&min<=0&&hr<=0){clearInterval(timeTestTime); 
+document.getElementById('startPause').style.display='block';
+document.getElementById('startPause2').style.display='none';
+clockRunning=0; paused=0;
+pauseAud("sound1");pauseAud("sound2");
+}
+
+
+}
+
+function timeTest2(){
+writeTime();
+timeTestTime=setInterval(timeTest,1000); }
+
+
+function showMenu(a){a.style.display="none";
+document.getElementById("menu").style.display="block";
+}
+function showMenu2(){document.getElementById("menu").style.display="none";
+document.getElementById("hiddenMenu").style.display="block";
+
+}
+var typeTo;var typeToStr;
+function inf(a,b){
+typeTo=a; a.value=''; typeToStr=b;}
+function typeNum(x){
+var aa; if(!isNaN(parseInt(typeTo.value))){aa=parseInt(typeTo.value.toString()+x);}
+else{aa=parseInt(x);}
+if(typeTo.value.toString().length<=1&&aa<=60){
+typeTo.value+=x;paused=0;
+}
+
+}
+function Del(){
+if(typeTo.value.toString().length>=0&&!isNaN(parseInt(typeTo.value))){typeTo.value=typeTo.value.toString().substr(0,typeTo.value.length-1); paused=0;}
+if(typeTo.value.toString().length<=0){typeTo.value=typeToStr; }
+
+
+}
+var clockRunning=0; var paused=0;
+function valId(a){
+if(!isNaN(parseInt(document.getElementById(a).value))){ return true;}
+else{ return false; }
+}
+function startPause(a){
+if(valId('hr')&&valId('min')&&valId('sec')&&clockRunning!=1&&paused!=1){hr=parseInt(document.getElementById('hr').value);min=parseInt(document.getElementById('min').value); sec=parseInt(document.getElementById('sec').value); timeTest2(); clockRunning=1; a.style.display='none';document.getElementById('startPause2').style.display='block'; 
+document.getElementById("sound1").load();
+document.getElementById("sound1").pause();
+document.getElementById("sound2").load();
+document.getElementById("sound2").pause();
+}
+else if(clockRunning==1&&paused!=1){
+clearInterval(timeTestTime);paused=1;clockRunning=0;
+a.style.display='none';document.getElementById('startPause').style.display='block';
+pauseAud("sound1");pauseAud("sound2");
+}
+else if(clockRunning!=1&&paused==1){
+paused=0;clockRunning=1;timeTest2();
+a.style.display='none';document.getElementById('startPause2').style.display='block';
+//playAud("sound1");playAud("sound2");
+}
+else{}
+}
+
+
+function playAud(x){
+var a=document.getElementById(x);
+if(a.ended==true){
+a.load(); }
+else{if(a.paused==true){a.play();}
+else{a.play();}
+}
+}
+function pauseAud(x){
+document.getElementById(x).pause();
+}
+function muteAud(x){
+document.getElementById(x).muted=true;
+}
+function unmuteAud(x){
+document.getElementById(x).muted=false;
+}
+
+	</script>
+</body>
+
+
+
+</html>
+
+
